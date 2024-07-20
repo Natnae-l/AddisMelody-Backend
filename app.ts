@@ -1,13 +1,28 @@
 import express, { Application } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 // load envionment variables
 dotenv.config();
 
 const app: Application = express();
 
-// connect to datanase and start the application
+const limiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  limit: 100,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: "Too many requests, please try again later.",
+});
+
+// Apply the rate limiting middleware to all requests.
+app.use(limiter);
+// Apply appropirate headers
+app.use(helmet());
+
+// connect to database and start the application
 mongoose
   .connect(process.env?.MONGO_URL || "")
   .then(() => {
