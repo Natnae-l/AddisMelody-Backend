@@ -29,7 +29,7 @@ app.use("/api-docs", serve, swaggerUi.setup(specs));
 
 // connect to database and start the application
 mongoose
-  .connect(process.env?.MONGO_URL || "")
+  .connect(process.env.MONGO_URL as string)
   .then(() => {
     app.listen(process.env.PORT, () =>
       console.log(`app started listening on port: ${process.env.PORT}`)
