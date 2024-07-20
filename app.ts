@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import swaggerUi, { serve } from "swagger-ui-express";
+import { specs } from "./swagger";
 
 // load envionment variables
 dotenv.config();
@@ -21,6 +23,9 @@ const limiter = rateLimit({
 app.use(limiter);
 // Apply appropirate headers
 app.use(helmet());
+
+// load API documentaiion
+app.use("/api-docs", serve, swaggerUi.setup(specs));
 
 // connect to database and start the application
 mongoose
