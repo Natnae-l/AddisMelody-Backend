@@ -5,6 +5,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import swaggerUi, { serve } from "swagger-ui-express";
 import { specs } from "./swagger";
+import userAccount from "./route/userAccount";
 
 // load envionment variables
 dotenv.config();
@@ -19,6 +20,9 @@ const limiter = rateLimit({
   message: "Too many requests, please try again later.",
 });
 
+// parsers
+app.use(express.json());
+
 // Apply the rate limiting middleware to all requests.
 app.use(limiter);
 // Apply appropirate headers
@@ -26,6 +30,9 @@ app.use(helmet());
 
 // load API documentaiion
 app.use("/api-docs", serve, swaggerUi.setup(specs));
+
+// user account based routes
+app.use("/account", userAccount);
 
 // connect to database and start the application
 mongoose
