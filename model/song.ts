@@ -1,4 +1,4 @@
-import { Schema, Document, model, isObjectIdOrHexString } from "mongoose";
+import { Schema, Document, model } from "mongoose";
 
 interface Song extends Document {
   createdBy: string;
@@ -33,11 +33,9 @@ const songSchema = new Schema({
     type: String,
   },
   banner: {
-    required: true,
     type: String,
   },
   audio: {
-    required: true,
     type: String,
   },
 });
