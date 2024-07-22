@@ -160,10 +160,24 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const getProfilePicture = (req: Request, res: Response) => {
+const getProfilePicture = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const imageName = req.params.image;
+    const user: User | null = await UserModel.findById(req.query._id as string);
 
+    if (
+      !(
+        user &&
+        user?.profilePicture !=
+          process.env.SERVER_URL + `/account/profile/${imageName}`
+      )
+    ) {
+      res.status(404).send({ message: "invalid input" });
+      return;
+    }
     if (!imageName) {
       res.status(404).send({ message: "profile picture unavailable" });
     }

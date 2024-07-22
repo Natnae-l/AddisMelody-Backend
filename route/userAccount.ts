@@ -26,6 +26,6 @@ const upload = multer({ storage: storage });
 router.post("/create", createAccount);
 router.put("/login", login);
 router.patch("/update", auth, upload.single("profilePicture"), updateProfile);
-router.get("/profile/uploads/:image", getProfilePicture);
+router.get("/profile/uploads/:image", auth, getProfilePicture);
 
 export default router;
