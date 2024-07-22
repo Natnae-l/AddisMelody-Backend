@@ -5,6 +5,8 @@ interface Song extends Document {
   artist: string;
   album: string;
   genre: string;
+  banner: string;
+  audio: string;
 }
 
 const songSchema = new Schema({
@@ -21,6 +23,14 @@ const songSchema = new Schema({
     type: String,
   },
   genre: {
+    required: true,
+    type: String,
+  },
+  banner: {
+    required: true,
+    type: String,
+  },
+  audio: {
     required: true,
     type: String,
   },

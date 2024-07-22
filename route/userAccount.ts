@@ -5,22 +5,10 @@ import {
   login,
   updateProfile,
 } from "../controller/userAccount";
-import path from "path";
-import multer from "multer";
 import auth from "../controller/middleware";
+import upload from "../controller/multer";
 
 const router: Router = express.Router();
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../uploads/"));
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
 
 // Account based routers
 router.post("/create", createAccount);
