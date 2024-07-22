@@ -1,6 +1,7 @@
-import { Schema, Document, model } from "mongoose";
+import { Schema, Document, model, isObjectIdOrHexString } from "mongoose";
 
 interface Song extends Document {
+  createdBy: string;
   title: string;
   artist: string;
   album: string;
@@ -10,6 +11,11 @@ interface Song extends Document {
 }
 
 const songSchema = new Schema({
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: "users",
+    required: true,
+  },
   title: {
     required: true,
     type: String,

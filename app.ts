@@ -6,6 +6,7 @@ import rateLimit from "express-rate-limit";
 import swaggerUi, { serve } from "swagger-ui-express";
 import { specs } from "./swagger";
 import userAccount from "./route/userAccount";
+import songs from "./route/song";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
@@ -38,6 +39,8 @@ app.use("/api-docs", serve, swaggerUi.setup(specs));
 
 // user account based routes
 app.use("/account", userAccount);
+// song router
+app.use("/songs", songs);
 
 // unavailable routes to be handled here
 app.use((req: Request, res: Response) => {
