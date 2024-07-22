@@ -92,7 +92,7 @@ const getFile = async (req: Request, res: Response): Promise<void> => {
 const updateSong = async (req: Request, res: Response) => {
   try {
     const body: Song = req.body;
-    console.log(req.params.id);
+
     const updates: Array<keyof ToBeUpdated> = [
       "album",
       "artist",
@@ -125,8 +125,6 @@ const updateSong = async (req: Request, res: Response) => {
       res.status(400).json({ message: "Required fields not supplied" });
       return;
     }
-
-    console.log(toBeUpdated);
 
     let song = await SongModel.findOne({ _id: req.params.id });
     if (!song) {
