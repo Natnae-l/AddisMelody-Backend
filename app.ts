@@ -6,6 +6,7 @@ import rateLimit from "express-rate-limit";
 import swaggerUi, { serve } from "swagger-ui-express";
 import { specs } from "./swagger";
 import userAccount from "./route/userAccount";
+import cookieParser from "cookie-parser";
 
 // load envionment variables
 dotenv.config();
@@ -22,6 +23,7 @@ const limiter = rateLimit({
 
 // parsers
 app.use(express.json());
+app.use(cookieParser());
 
 // Apply the rate limiting middleware to all requests.
 app.use(limiter);
