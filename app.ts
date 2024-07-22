@@ -1,4 +1,4 @@
-import express, { Application } from "express";
+import express, { Application, Request, Response } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import helmet from "helmet";
@@ -7,6 +7,7 @@ import swaggerUi, { serve } from "swagger-ui-express";
 import { specs } from "./swagger";
 import userAccount from "./route/userAccount";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 // load envionment variables
 dotenv.config();
@@ -20,6 +21,8 @@ const limiter = rateLimit({
   legacyHeaders: false,
   message: "Too many requests, please try again later.",
 });
+// cors config
+app.use(cors());
 
 // parsers
 app.use(express.json());
@@ -35,6 +38,12 @@ app.use("/api-docs", serve, swaggerUi.setup(specs));
 
 // user account based routes
 app.use("/account", userAccount);
+
+// unavailable routes to be handled here
+app.use((req: Request, res: Response) => {
+  res.status(404).send({ message: "Requested url unavailable" });
+  return;
+});
 
 // connect to database and start the application
 mongoose

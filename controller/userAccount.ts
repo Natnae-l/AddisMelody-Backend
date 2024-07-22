@@ -135,6 +135,8 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
         }
       });
     }
+
+    res.status(200).send({ message: "hi" });
   } catch (error) {
     console.log(error);
   }
