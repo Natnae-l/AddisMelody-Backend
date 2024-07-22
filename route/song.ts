@@ -2,6 +2,7 @@ import express, { Router } from "express";
 import auth from "../controller/middleware";
 import {
   deleteSongs,
+  generateStatistics,
   getFile,
   getSongs,
   saveSongs,
@@ -31,6 +32,7 @@ router.patch(
   ]),
   updateSong
 );
+router.get("/statistics", auth, generateStatistics);
 router.delete("/delete/:id", auth, deleteSongs);
 
 export default router;

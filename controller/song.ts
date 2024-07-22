@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import SongModel from "../model/song";
 import path from "path";
+import mongoose from "mongoose";
 
 interface Song {
   createdBy: string;
@@ -163,4 +164,76 @@ const deleteSongs = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export { getSongs, saveSongs, getFile, deleteSongs, updateSong };
+const generateStatistics = async (req: Request, res: Response) => {
+  try {
+    const createdBy = req.query._id as string;
+    if (!createdBy) {
+      return res.status(400).json({ message: "Missing createdBy parameter" });
+    }
+    console.log(`createdBy: ${createdBy}`);
+
+    // Aggregation pipeline
+    const aggregationPipeline = [
+      { $match: { createdBy: new mongoose.Types.ObjectId(createdBy) } },
+      {
+        $facet: {
+          totalSongs: [{ $count: "count" }],
+          totalArtists: [{ $group: { _id: "$artist" } }, { $count: "count" }],
+          totalAlbums: [{ $group: { _id: "$album" } }, { $count: "count" }],
+          totalGenres: [{ $group: { _id: "$genre" } }, { $count: "count" }],
+          genreCounts: [{ $group: { _id: "$genre", count: { $sum: 1 } } }],
+          artistAlbumCounts: [
+            {
+              $group: {
+                _id: { artist: "$artist", album: "$album" },
+                count: { $sum: 1 },
+              },
+            },
+          ],
+          albumSongCounts: [{ $group: { _id: "$album", count: { $sum: 1 } } }],
+          genreSongCounts: [{ $group: { _id: "$genre", count: { $sum: 1 } } }],
+          artistSongCounts: [
+            { $group: { _id: "$artist", count: { $sum: 1 } } },
+          ],
+        },
+      },
+    ];
+
+    // Run the aggregation pipeline
+    const results = await SongModel.aggregate(aggregationPipeline);
+
+    // Check if results are empty
+    if (results.length === 0) {
+      return res.status(200).json({ message: "No statistics found" });
+    }
+
+    const statistics = results[0];
+
+    // Construct the response
+    res.status(200).json({
+      totalSongs: statistics.totalSongs?.[0]?.count || 0,
+      totalArtists: statistics.totalArtists?.[0]?.count || 0,
+      totalAlbums: statistics.totalAlbums?.[0]?.count || 0,
+      totalGenres: statistics.totalGenres?.[0]?.count || 0,
+      genreCounts: statistics.genreCounts || [],
+      artistAlbumCounts: statistics.artistAlbumCounts || [],
+      albumSongCounts: statistics.albumSongCounts || [],
+      genreSongCounts: statistics.genreSongCounts || [],
+      artistSongCounts: statistics.artistSongCounts || [],
+    });
+  } catch (error: any) {
+    console.error("Error generating statistics:", error);
+    res.status(500).json({ message: "error getting statstics" });
+  }
+};
+
+export default generateStatistics;
+
+export {
+  getSongs,
+  saveSongs,
+  getFile,
+  deleteSongs,
+  updateSong,
+  generateStatistics,
+};
