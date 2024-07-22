@@ -94,8 +94,10 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
     const body: ToBeUpdated = req.body;
 
     if (req.file) {
-      req.body["profileImage"] =
-        process.env.serverUrl + "/profile/uploads/" + req.file.filename;
+      body["profilePicture"] =
+        process.env.SERVER_URL +
+        "/account/profile/uploads/" +
+        req.file.filename;
     }
 
     let toBeUpdated: ToBeUpdated = {};
@@ -120,13 +122,13 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
       res.status(404).send({ message: "Account doesn't exist" });
       return;
     }
-    //here
+    console.log(toBeUpdated);
     if (updateAccount["profilePicture"] != "") {
       const serverUrl = process.env.SERVER_URL as string;
 
       const imageName = updateAccount["profilePicture"].substring(
         // 24 is the length of the url, we are going to parse
-        serverUrl.length + 17
+        serverUrl.length + 24
       );
 
       fs.unlink(path.join(__dirname, `../uploads/${imageName}`), (err) => {
@@ -136,10 +138,39 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
       });
     }
 
-    res.status(200).send({ message: "hi" });
+    for (let update in toBeUpdated) {
+      updateAccount[update as keyof ToBeUpdated] =
+        toBeUpdated[update as keyof ToBeUpdated] || "";
+    }
+
+    const updated = await updateAccount.save();
+
+    res.status(200).send({
+      message: "profile updated successfully",
+      data: {
+        username: updated.username,
+        profilePicture: updated.profilePicture,
+      },
+    });
   } catch (error) {
     console.log(error);
+    res
+      .status(500)
+      .send({ message: "error updating profile, please try again" });
   }
 };
 
-export { createAccount, login, updateProfile };
+const getProfilePicture = (req: Request, res: Response) => {
+  try {
+    const imageName = req.params.image;
+
+    if (!imageName) {
+      res.status(404).send({ message: "profile picture unavailable" });
+    }
+    res.status(200).sendFile(path.join(__dirname, `../uploads/${imageName}`));
+  } catch (error) {
+    res.status(404).send({ message: "invalid request" });
+  }
+};
+
+export { createAccount, login, updateProfile, getProfilePicture };

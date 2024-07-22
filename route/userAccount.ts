@@ -1,5 +1,10 @@
 import express, { Router } from "express";
-import { createAccount, login, updateProfile } from "../controller/userAccount";
+import {
+  createAccount,
+  getProfilePicture,
+  login,
+  updateProfile,
+} from "../controller/userAccount";
 import path from "path";
 import multer from "multer";
 import auth from "../controller/middleware";
@@ -20,6 +25,7 @@ const upload = multer({ storage: storage });
 // Account based routers
 router.post("/create", createAccount);
 router.put("/login", login);
-router.patch("/update", auth, upload.single("profileImage"), updateProfile);
+router.patch("/update", auth, upload.single("profilePicture"), updateProfile);
+router.get("/profile/uploads/:image", getProfilePicture);
 
 export default router;

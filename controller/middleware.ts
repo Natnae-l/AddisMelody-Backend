@@ -34,7 +34,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
               res.clearCookie("token");
               res.clearCookie("refreshToken");
 
-              return res.status(401).json({ error: "not authorized" });
+              return res.status(401).json({ message: "not authorized" });
             }
             let generatedToken = await user.generateToken();
 
@@ -49,18 +49,18 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
           }
         } catch (error) {
           console.log(error);
-          return res.status(401).json({ error: "not authorized" });
+          return res.status(401).json({ message: "not authorized" });
         }
       }
     } else {
       res.status(400).send({
-        error: "not authorized",
+        message: "not authorized",
       });
     }
   } catch (error) {
     console.log(error);
 
-    res.status(500).send("Internal server error");
+    res.status(500).send({ message: "Internal server error" });
   }
 };
 
