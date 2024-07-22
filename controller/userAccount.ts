@@ -83,8 +83,6 @@ const login = async (req: Request, res: Response): Promise<void> => {
 };
 
 const updateProfile = async (req: Request, res: Response): Promise<void> => {
-  console.log(req.query._id);
-
   try {
     const updateAllowed: Array<keyof ToBeUpdated> = [
       "username",
@@ -122,7 +120,7 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
       res.status(404).send({ message: "Account doesn't exist" });
       return;
     }
-    console.log(toBeUpdated);
+
     if (updateAccount["profilePicture"] != "") {
       const serverUrl = process.env.SERVER_URL as string;
 
@@ -140,7 +138,9 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
 
     for (let update in toBeUpdated) {
       updateAccount[update as keyof ToBeUpdated] =
-        toBeUpdated[update as keyof ToBeUpdated] || "";
+        toBeUpdated[update as keyof ToBeUpdated] ||
+        updateAccount[update as keyof ToBeUpdated] ||
+        "";
     }
 
     const updated = await updateAccount.save();

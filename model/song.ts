@@ -31,6 +31,13 @@ const songSchema = new Schema({
   genre: {
     required: true,
     type: String,
+    enum: [
+      "Pop",
+      "Hip-Hop/Rap",
+      "Rock",
+      "Electronic Dance Music (EDM)",
+      "R&B (Rhythm and Blues)",
+    ],
   },
   banner: {
     type: String,
