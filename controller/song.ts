@@ -195,7 +195,7 @@ const generateStatistics = async (req: Request, res: Response) => {
             { $group: { _id: "$artist", count: { $sum: 1 } } },
           ],
           favoriteSongsCount: [
-            { $match: { createdBy, favorite: true } },
+            { $match: { favourite: true } },
             { $count: "count" },
           ],
         },
@@ -223,10 +223,11 @@ const generateStatistics = async (req: Request, res: Response) => {
       albumSongCounts: statistics.albumSongCounts || [],
       genreSongCounts: statistics.genreSongCounts || [],
       artistSongCounts: statistics.artistSongCounts || [],
+      favoriteSongsCount: statistics.favoriteSongsCount?.[0]?.count || 0,
     });
   } catch (error: any) {
     console.error("Error generating statistics:", error);
-    res.status(500).json({ message: "error getting statstics" });
+    res.status(500).json({ message: "Error getting statistics" });
   }
 };
 
