@@ -1,8 +1,8 @@
 FROM node:alpine3.20
 
-RUN mkdir /app
+# RUN mkdir /app
 
-WORKDIR /app
+WORKDIR /usr/app
 
 COPY . .
 
@@ -13,7 +13,7 @@ ENV PORT=3000 \
 
 RUN npm install
 
-RUN tsc
+RUN npx tsc
 
 EXPOSE 3000
 
