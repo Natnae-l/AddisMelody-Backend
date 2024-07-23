@@ -17,7 +17,7 @@ RUN npx tsc
 
 RUN mkdir /dist
 
-RUN mkdir /dist/uploads
+RUN mkdir /app/dist/uploads
 
 EXPOSE 3000
 
