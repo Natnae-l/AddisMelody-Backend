@@ -44,7 +44,9 @@ const getNotified = (req: Request, res: Response) => {
 
 const getUserNotification = async (req: Request, res: Response) => {
   try {
-    const notifications = await NotificationModel.find({ to: req.query._id });
+    const notifications = await NotificationModel.find({
+      to: req.query._id,
+    }).sort({ _id: -1 });
 
     res.status(200).send({ data: notifications });
   } catch (error) {

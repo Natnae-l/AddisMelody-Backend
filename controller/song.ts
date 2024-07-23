@@ -28,12 +28,35 @@ interface UploadedFiles {
 
 const getSongs = async (req: Request, res: Response): Promise<void> => {
   try {
-    const mySongs = await SongModel.find(
-      { createdBy: req.query._id },
-      { createdBy: 0 }
-    );
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = 6;
 
-    res.status(200).send({ songs: mySongs });
+    let filterDb;
+
+    const genres = [
+      "Pop",
+      "Hip-Hop/Rap",
+      "Rock",
+      "Electronic Dance Music (EDM)",
+      "R&B (Rhythm and Blues)",
+    ];
+
+    if (req.query.genre && genres.includes(req.query.genre as string)) {
+      filterDb = { createdBy: req.query._id, genre: req.query.genre };
+    } else {
+      filterDb = { createdBy: req.query._id };
+    }
+
+    const skip = (page - 1) * limit;
+
+    const mySongs = await SongModel.find(filterDb, { createdBy: 0 })
+      .sort({ _id: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const count = await SongModel.countDocuments(filterDb);
+
+    res.status(200).send({ songs: mySongs, count: count });
   } catch (error) {
     res.status(500).send({ message: "error fetching songs" });
   }

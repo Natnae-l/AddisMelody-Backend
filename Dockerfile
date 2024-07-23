@@ -15,8 +15,6 @@ RUN npm install
 
 RUN npx tsc
 
-# RUN mkdir /dist
-
 RUN mkdir /app/dist/uploads
 
 EXPOSE 3000

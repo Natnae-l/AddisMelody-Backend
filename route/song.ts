@@ -89,6 +89,19 @@ export default router;
  *   get:
  *     summary: Get a list of songs
  *     tags: [Songs]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: page number
+ *       - in: query
+ *         name: genre
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: music genre
  *     responses:
  *       200:
  *         description: A list of songs
