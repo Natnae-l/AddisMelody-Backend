@@ -1,4 +1,7 @@
 import swaggerJsdoc from "swagger-jsdoc";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const options = {
   definition: {
@@ -15,7 +18,14 @@ const options = {
       },
     ],
   },
-  apis: ["./route/userAccount.ts"],
+  apis: [
+    "./route/userAccount.ts",
+    "./route/notification.ts",
+    "./route/song.ts",
+    "./route/userAccount.js",
+    "./route/notification.js",
+    "./route/song.js",
+  ],
 };
 
 const specs = swaggerJsdoc(options);

@@ -59,10 +59,16 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
     const files = req.files ? (req.files as UploadedFiles) : null;
 
     if (files) {
-      newSong["audio"] =
-        process.env.SERVER_URL + "/songs/data/" + files["audio"][0].filename;
-      newSong["banner"] =
-        process.env.SERVER_URL + "/songs/data/" + files["banner"][0].filename;
+      if (files["audio"]) {
+        console.log("hi");
+
+        newSong["audio"] =
+          process.env.SERVER_URL + "/songs/data/" + files["audio"][0].filename;
+      }
+      if (files["banner"]) {
+        newSong["banner"] =
+          process.env.SERVER_URL + "/songs/data/" + files["banner"][0].filename;
+      }
     }
 
     newSong = await newSong.save();
@@ -72,7 +78,9 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
       data: { ...newSong.toJSON(), createdBy: undefined },
     });
   } catch (error) {
-    res.status(500).send({ message: "error saving song" });
+    console.log(error);
+
+    res.status(400).send({ message: "Invalid input" });
   }
 };
 
@@ -102,7 +110,6 @@ const updateSong = async (req: Request, res: Response) => {
       "banner",
       "audio",
     ];
-    console.log(body);
 
     const toBeUpdated: ToBeUpdated = {};
 
@@ -116,10 +123,14 @@ const updateSong = async (req: Request, res: Response) => {
     const files = req.files ? (req.files as UploadedFiles) : null;
 
     if (files) {
-      toBeUpdated["audio"] =
-        process.env.SERVER_URL + "/songs/data/" + files["audio"][0].filename;
-      toBeUpdated["banner"] =
-        process.env.SERVER_URL + "/songs/data/" + files["banner"][0].filename;
+      if (files["audio"]) {
+        toBeUpdated["audio"] =
+          process.env.SERVER_URL + "/songs/data/" + files["audio"][0].filename;
+      }
+      if (files["banner"]) {
+        toBeUpdated["banner"] =
+          process.env.SERVER_URL + "/songs/data/" + files["banner"][0].filename;
+      }
     }
 
     if (Object.keys(toBeUpdated).length == 0) {
