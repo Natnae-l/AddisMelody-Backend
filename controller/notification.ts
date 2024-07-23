@@ -12,7 +12,7 @@ interface Notification {
 }
 
 const getNotified = (req: Request, res: Response) => {
-  const id = `${req.query._id}`;
+  const id = req.query._id || req.query.id;
 
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
@@ -28,26 +28,40 @@ const getNotified = (req: Request, res: Response) => {
     save.set(id, new Set());
     save.get(id).add(res);
   }
+  sendNotification({
+    to: "1",
+    title: "Welcome to AddisMelody",
+    body: "explore and add musics you like!",
+    time: Date.now(),
+    read: false,
+  });
 
   req.on("close", () => {
     console.log(`Connection closed for merchant ${id}`);
     save.get(id).delete(res);
-    console.log(save);
   });
+};
+
+const getUserNotification = async (req: Request, res: Response) => {
+  try {
+    const notifications = await NotificationModel.find({ to: req.query._id });
+
+    res.status(200).send({ data: notifications });
+  } catch (error) {
+    res.status(500).send({ message: "error reading notifications" });
+  }
 };
 
 const sendNotification = async (notification: Notification): Promise<void> => {
   try {
     if (save.has(notification.to)) {
       for (let res of save.get(notification.to)) {
-        console.log(res);
-        res.write(`data: hi\n\n`);
-        console.log("i");
+        res.write(`data:${JSON.stringify(notification)}\n\n`);
       }
     }
     await NotificationModel.create(notification);
-  } catch (error) {
-    throw new Error("error sending notification");
+  } catch (error: any) {
+    throw new Error(error.message);
   }
 };
 
@@ -67,4 +81,4 @@ const readNotification = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export { getNotified, sendNotification, readNotification };
+export { getNotified, sendNotification, readNotification, getUserNotification };

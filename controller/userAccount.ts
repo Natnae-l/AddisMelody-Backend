@@ -3,6 +3,7 @@ import UserModel, { User } from "../model/user";
 import bcrypt from "bcryptjs";
 import fs from "fs";
 import path from "path";
+import { sendNotification } from "./notification";
 
 interface ToBeUpdated {
   username?: string;
@@ -30,7 +31,15 @@ const createAccount = async (req: Request, res: Response): Promise<void> => {
 
     const newUser = new UserModel({ username, password });
 
-    await newUser.save();
+    const savedUser = await newUser.save();
+
+    sendNotification({
+      to: savedUser._id as string,
+      title: "Welcome to AddisMelody",
+      body: "explore and add musics you like!",
+      time: Date.now(),
+      read: false,
+    });
 
     res.status(201).send({ message: "Account created successfully" });
   } catch (error) {
