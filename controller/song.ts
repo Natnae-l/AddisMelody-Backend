@@ -168,9 +168,8 @@ const generateStatistics = async (req: Request, res: Response) => {
   try {
     const createdBy = req.query._id as string;
     if (!createdBy) {
-      return res.status(400).json({ message: "Missing createdBy parameter" });
+      return res.status(400).json({ message: "Invalid request" });
     }
-    console.log(`createdBy: ${createdBy}`);
 
     // Aggregation pipeline
     const aggregationPipeline = [
@@ -194,6 +193,10 @@ const generateStatistics = async (req: Request, res: Response) => {
           genreSongCounts: [{ $group: { _id: "$genre", count: { $sum: 1 } } }],
           artistSongCounts: [
             { $group: { _id: "$artist", count: { $sum: 1 } } },
+          ],
+          favoriteSongsCount: [
+            { $match: { createdBy, favorite: true } },
+            { $count: "count" },
           ],
         },
       },
@@ -227,7 +230,27 @@ const generateStatistics = async (req: Request, res: Response) => {
   }
 };
 
-export default generateStatistics;
+const toggleFavourite = async (req: Request, res: Response) => {
+  try {
+    const _id = req.params.id;
+
+    let song = await SongModel.findOne({ createdBy: req.query._id, _id });
+
+    if (!song) {
+      res.status(404).send({ message: "Song not found" });
+      return;
+    }
+
+    if (song) {
+      song.favourite = song.favourite ? !song.favourite : true;
+    }
+
+    song = await song.save();
+    res.status(200).send({ data: song.toJSON() });
+  } catch (error) {
+    res.status(500).send({ message: "error toggling favourite" });
+  }
+};
 
 export {
   getSongs,
@@ -236,4 +259,5 @@ export {
   deleteSongs,
   updateSong,
   generateStatistics,
+  toggleFavourite,
 };

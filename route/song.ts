@@ -6,6 +6,7 @@ import {
   getFile,
   getSongs,
   saveSongs,
+  toggleFavourite,
   updateSong,
 } from "../controller/song";
 import upload from "../controller/multer";
@@ -34,5 +35,6 @@ router.patch(
 );
 router.get("/statistics", auth, generateStatistics);
 router.delete("/delete/:id", auth, deleteSongs);
+router.patch("/favourite/:id", auth, toggleFavourite);
 
 export default router;

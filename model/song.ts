@@ -8,6 +8,7 @@ interface Song extends Document {
   genre: string;
   banner: string;
   audio: string;
+  favourite: boolean;
 }
 
 const songSchema = new Schema({
@@ -44,6 +45,10 @@ const songSchema = new Schema({
   },
   audio: {
     type: String,
+  },
+  favourite: {
+    type: Boolean,
+    default: false,
   },
 });
 
