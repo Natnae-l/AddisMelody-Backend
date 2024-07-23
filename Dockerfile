@@ -6,6 +6,8 @@ WORKDIR /app
 
 COPY . .
 
+RUN mkdir /uploads
+
 ENV PORT=3000 \
     MONGO_URL="mongodb+srv://Natnael:e840qPAaOMYxgeSC@cluster0.vs0kmkg.mongodb.net/addis-melody?retryWrites=true&w=majority&appName=Cluster0" \
     SERVER_URL="https://addismelody-backend.onrender.com" \
