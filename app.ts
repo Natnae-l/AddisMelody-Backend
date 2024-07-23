@@ -9,6 +9,7 @@ import userAccount from "./route/userAccount";
 import songs from "./route/song";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import notifications from "./route/notification";
 
 // load envionment variables
 dotenv.config();
@@ -41,6 +42,8 @@ app.use("/api-docs", serve, swaggerUi.setup(specs));
 app.use("/account", userAccount);
 // song router
 app.use("/songs", songs);
+// notification router
+app.use("/notification", notifications);
 
 // unavailable routes to be handled here
 app.use((req: Request, res: Response) => {

@@ -13,30 +13,33 @@ export interface User extends Document {
   generateToken(): Promise<Tokens>;
 }
 
-const userSchema = new Schema({
-  username: {
-    required: true,
-    unique: true,
-    type: String,
+const userSchema = new Schema(
+  {
+    username: {
+      required: true,
+      unique: true,
+      type: String,
+    },
+    password: {
+      required: true,
+      type: String,
+    },
+    profilePicture: {
+      required: false,
+      type: String,
+      default: "",
+    },
+    token: {
+      type: String,
+      required: false,
+    },
+    refreshToken: {
+      type: String,
+      required: false,
+    },
   },
-  password: {
-    required: true,
-    type: String,
-  },
-  profilePicture: {
-    required: false,
-    type: String,
-    default: "",
-  },
-  token: {
-    type: String,
-    required: false,
-  },
-  refreshToken: {
-    type: String,
-    required: false,
-  },
-});
+  { timestamps: true }
+);
 
 userSchema.methods.generateToken = async function (): Promise<Tokens> {
   const token: string = jwt.sign(

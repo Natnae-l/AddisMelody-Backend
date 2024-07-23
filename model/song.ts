@@ -11,46 +11,51 @@ interface Song extends Document {
   favourite: boolean;
 }
 
-const songSchema = new Schema({
-  createdBy: {
-    type: Schema.Types.ObjectId,
-    ref: "users",
-    required: true,
+const songSchema = new Schema(
+  {
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "users",
+      required: true,
+    },
+    title: {
+      required: true,
+      type: String,
+    },
+    artist: {
+      required: true,
+      type: String,
+    },
+    album: {
+      required: true,
+      type: String,
+    },
+    genre: {
+      required: true,
+      type: String,
+      enum: [
+        "Pop",
+        "Hip-Hop/Rap",
+        "Rock",
+        "Electronic Dance Music (EDM)",
+        "R&B (Rhythm and Blues)",
+      ],
+    },
+    banner: {
+      type: String,
+    },
+    audio: {
+      type: String,
+    },
+    favourite: {
+      type: Boolean,
+      default: false,
+    },
   },
-  title: {
-    required: true,
-    type: String,
-  },
-  artist: {
-    required: true,
-    type: String,
-  },
-  album: {
-    required: true,
-    type: String,
-  },
-  genre: {
-    required: true,
-    type: String,
-    enum: [
-      "Pop",
-      "Hip-Hop/Rap",
-      "Rock",
-      "Electronic Dance Music (EDM)",
-      "R&B (Rhythm and Blues)",
-    ],
-  },
-  banner: {
-    type: String,
-  },
-  audio: {
-    type: String,
-  },
-  favourite: {
-    type: Boolean,
-    default: false,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 const userModel = model<Song>("songs", songSchema);
 export default userModel;
