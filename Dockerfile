@@ -15,7 +15,7 @@ RUN npm install
 
 RUN npx tsc
 
-RUN mkdir /dist
+# RUN mkdir /dist
 
 RUN mkdir /app/dist/uploads
 
