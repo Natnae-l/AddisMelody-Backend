@@ -181,7 +181,7 @@ const updateSong = async (req: Request, res: Response) => {
       data: { ...song.toJSON(), createdBy: undefined },
     });
   } catch (error) {
-    res.send({ message: "error updating account" });
+    res.status(400).send({ message: "error updating account" });
   }
 };
 
