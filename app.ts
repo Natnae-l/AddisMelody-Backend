@@ -33,6 +33,7 @@ var corsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
+  credentials: true,
 };
 // cors config
 app.use(cors(corsOptions));
