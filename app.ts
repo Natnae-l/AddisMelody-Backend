@@ -23,20 +23,13 @@ const limiter = rateLimit({
   legacyHeaders: false,
   message: "Too many requests, please try again later.",
 });
-
-var whitelist = ["http://localhost:5173", "https://addismelody.netlify.app"];
-var corsOptions = {
-  origin: function (origin: any, callback: any) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-};
 // cors config
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: "https://addismelody.netlify.app/", // Replace with your frontend URL
+    credentials: true,
+  })
+);
 
 // parsers
 app.use(express.json());
