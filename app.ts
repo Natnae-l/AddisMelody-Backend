@@ -24,7 +24,7 @@ const limiter = rateLimit({
   message: "Too many requests, please try again later.",
 });
 
-var whitelist = ["http://example1.com", "http://example2.com"];
+var whitelist = ["http://localhost:5173", "https://addismelody.netlify.app"];
 var corsOptions = {
   origin: function (origin: any, callback: any) {
     if (whitelist.indexOf(origin) !== -1) {
