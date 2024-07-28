@@ -23,11 +23,19 @@ const limiter = rateLimit({
   legacyHeaders: false,
   message: "Too many requests, please try again later.",
 });
+
+var whitelist = ["http://example1.com", "http://example2.com"];
+var corsOptions = {
+  origin: function (origin: any, callback: any) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
 // cors config
-app.use(cors({
-  origin: 'http://localhost:5173',  // Replace with your frontend URL
-  credentials: true,
-}));
+app.use(cors(corsOptions));
 
 // parsers
 app.use(express.json());
