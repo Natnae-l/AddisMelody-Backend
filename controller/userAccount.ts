@@ -83,7 +83,6 @@ const login = async (req: Request, res: Response): Promise<void> => {
     res.cookie("refreshToken", generatedToken.refreshToken, {
       httpOnly: true,
     });
-    console.log(res.cookie);
 
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
