@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import fs from "fs";
 import path from "path";
 import { sendNotification } from "./notification";
+import { log } from "util";
 
 interface ToBeUpdated {
   username?: string;
@@ -82,6 +83,8 @@ const login = async (req: Request, res: Response): Promise<void> => {
     res.cookie("refreshToken", generatedToken.refreshToken, {
       httpOnly: true,
     });
+    console.log(res.cookie);
+
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
     console.log(error);
