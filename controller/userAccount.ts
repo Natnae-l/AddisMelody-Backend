@@ -79,12 +79,12 @@ const login = async (req: Request, res: Response): Promise<void> => {
 
     res.cookie("token", generatedToken.token, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "none",
     });
     res.cookie("refreshToken", generatedToken.refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "none",
     });
 
