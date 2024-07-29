@@ -26,7 +26,7 @@ const limiter = rateLimit({
 // cors config
 app.use(
   cors({
-    origin: "https://addismelody-frontend.onrender.com", // Replace with your frontend URL
+    origin: "https://astp.andmtaskills.com", // Replace with your frontend URL
     credentials: true,
   })
 );
