@@ -26,7 +26,7 @@ const limiter = rateLimit({
 // cors config
 app.use(
   cors({
-    origin: "https://astp.andmtaskills.com", // Replace with your frontend URL
+    origin: "http://localhost:5173", // Replace with your frontend URL
     credentials: true,
   })
 );
