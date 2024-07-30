@@ -78,13 +78,13 @@ const login = async (req: Request, res: Response): Promise<void> => {
     const generatedToken = await account.generateToken();
 
     res.cookie("token", generatedToken.token, {
-      httpOnly: true,
-      secure: false,
+      httpOnly: false,
+      secure: true,
       sameSite: "none",
     });
     res.cookie("refreshToken", generatedToken.refreshToken, {
-      httpOnly: true,
-      secure: false,
+      httpOnly: false,
+      secure: true,
       sameSite: "none",
     });
 

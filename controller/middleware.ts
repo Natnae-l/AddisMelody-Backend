@@ -39,13 +39,13 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
             let generatedToken = await user.generateToken();
 
             res.cookie("token", generatedToken.token, {
-              httpOnly: true,
-              secure: false,
+              httpOnly: false,
+              secure: true,
               sameSite: "none",
             });
             res.cookie("refreshToken", generatedToken.refreshToken, {
-              httpOnly: true,
-              secure: false,
+              httpOnly: false,
+              secure: true,
               sameSite: "none",
             });
             req.query._id = auth._id;

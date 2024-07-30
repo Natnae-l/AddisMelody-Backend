@@ -9,6 +9,7 @@ interface Song extends Document {
   banner: string;
   audio: string;
   favourite: boolean;
+  private: boolean;
 }
 
 const songSchema = new Schema(
@@ -40,6 +41,10 @@ const songSchema = new Schema(
         "Electronic Dance Music (EDM)",
         "R&B (Rhythm and Blues)",
       ],
+    },
+    private: {
+      type: Boolean,
+      required: true,
     },
     banner: {
       type: String,
