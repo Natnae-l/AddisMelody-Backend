@@ -24,12 +24,21 @@ const limiter = rateLimit({
   message: "Too many requests, please try again later.",
 });
 // cors config
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "https://astp.andmtaskills.com"],
-    credentials: true,
-  })
-);
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+
+  // Intercept OPTIONS method
+  if (req.method === "OPTIONS") {
+    res.sendStatus(204); // No Content
+  } else {
+    next();
+  }
+});
 
 // parsers
 app.use(cookieParser());
