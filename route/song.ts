@@ -23,7 +23,7 @@ router.post(
   ]),
   saveSongs
 );
-router.get("/data/:file", auth, getFile);
+router.get("/data/:file", getFile);
 router.patch(
   "/update/:id",
   auth,

@@ -77,14 +77,13 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
       artist,
       album,
       genre,
+      private: req.body.private || false,
     });
 
     const files = req.files ? (req.files as UploadedFiles) : null;
 
     if (files) {
       if (files["audio"]) {
-        console.log("hi");
-
         newSong["audio"] =
           process.env.SERVER_URL + "/songs/data/" + files["audio"][0].filename;
       }
