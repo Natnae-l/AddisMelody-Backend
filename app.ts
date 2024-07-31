@@ -1,7 +1,6 @@
 import express, { Application, Request, Response } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import swaggerUi, { serve } from "swagger-ui-express";
 import { specs } from "./swagger";
@@ -42,8 +41,6 @@ app.use(express.json());
 
 // Apply the rate limiting middleware to all requests.
 app.use(limiter);
-// Apply appropirate headers
-app.use(helmet());
 
 // load API documentaiion
 app.use("/api-docs", serve, swaggerUi.setup(specs));
