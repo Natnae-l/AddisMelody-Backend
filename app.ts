@@ -22,7 +22,14 @@ const limiter = rateLimit({
   legacyHeaders: false,
   message: "Too many requests, please try again later.",
 });
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD",
+    exposedHeaders: ["Content-Type", "Authorization"],
+    maxAge: 7200,
+  })
+);
 
 // parsers
 app.use(cookieParser());

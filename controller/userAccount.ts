@@ -79,9 +79,11 @@ const login = async (req: Request, res: Response): Promise<void> => {
 
     res.cookie("token", generatedToken.token, {
       httpOnly: true,
+      domain: "addispay.et",
     });
     res.cookie("refreshToken", generatedToken.refreshToken, {
       httpOnly: true,
+      domain: "addispay.et",
     });
 
     res.status(200).json({ message: "Login successful" });
