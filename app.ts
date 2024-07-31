@@ -24,7 +24,7 @@ const limiter = rateLimit({
 });
 app.use(
   cors({
-    origin: "*",
+    origin: "https://ux-start.addispay.et",
     methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD",
     exposedHeaders: ["Content-Type", "Authorization"],
     maxAge: 7200,
