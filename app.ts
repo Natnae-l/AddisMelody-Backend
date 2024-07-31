@@ -23,10 +23,12 @@ const limiter = rateLimit({
   legacyHeaders: false,
   message: "Too many requests, please try again later.",
 });
-cors({
-  origin: ["http://localhost:3000", "https://astp.andmtaskills.com"],
-  credentials: true,
-});
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://astp.andmtaskills.com"],
+    credentials: true,
+  })
+);
 
 // parsers
 app.use(cookieParser());
