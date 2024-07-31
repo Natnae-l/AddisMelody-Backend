@@ -25,7 +25,11 @@ const limiter = rateLimit({
 });
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://astp.andmtaskills.com"],
+    origin: [
+      "http://localhost:5173",
+      "https://astp.andmtaskills.com",
+      "https://addismelody.netlify.app/",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
