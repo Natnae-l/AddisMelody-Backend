@@ -56,6 +56,12 @@ const songSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    favouritedBy: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "users",
+      },
+    ],
   },
   {
     timestamps: true,

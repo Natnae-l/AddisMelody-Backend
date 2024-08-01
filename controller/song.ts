@@ -42,9 +42,9 @@ const getSongs = async (req: Request, res: Response): Promise<void> => {
     ];
 
     if (req.query.genre && genres.includes(req.query.genre as string)) {
-      filterDb = { createdBy: req.query._id, genre: req.query.genre };
+      filterDb = { genre: req.query.genre };
     } else {
-      filterDb = { createdBy: req.query._id };
+      filterDb = {};
     }
 
     const skip = (page - 1) * limit;
@@ -311,47 +311,91 @@ const generateStatistics = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error("Error generating statistics:", error);
-    res
-      .status(500)
-      .json({
-        message: "Error getting statistics",
-        token: req.query.token,
-        refreshToken: req.query.refreshToken,
-      });
+    res.status(500).json({
+      message: "Error getting statistics",
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
+  }
+};
+
+const fetchFavouritesForUser = async (req: Request, res: Response) => {
+  const userId = req.query?._id;
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is missing" });
+  }
+
+  try {
+    const favourites = await SongModel.find({
+      $or: [{ createdBy: userId }, { favouritedBy: userId }],
+    }).exec();
+
+    return res.status(200).json({
+      data: favourites,
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
+  } catch (error) {
+    console.error("Error", error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
   }
 };
 
 const toggleFavourite = async (req: Request, res: Response) => {
+  const userId = req.query._id as string;
+  const songId = req.params.id;
+
   try {
-    const _id = req.params.id;
-
-    let song = await SongModel.findOne({ createdBy: req.query._id, _id });
-
-    if (!song) {
-      res.status(404).send({ message: "Song not found" });
-      return;
-    }
+    const song = await SongModel.findOne({
+      _id: songId,
+      favouritedBy: userId,
+    }).exec();
 
     if (song) {
-      song.favourite = song.favourite ? !song.favourite : true;
-    }
+      const updatedSong = await SongModel.findOneAndUpdate(
+        { _id: songId },
+        { $pull: { favouritedBy: userId } },
+        { new: true }
+      ).exec();
 
-    song = await song.save();
-    res
-      .status(200)
-      .send({
-        data: song.toJSON(),
+      if (!updatedSong) {
+        return res.status(404).json({ message: "Song not found" });
+      }
+
+      return res.status(200).json({
+        data: updatedSong,
         token: req.query.token,
         refreshToken: req.query.refreshToken,
       });
+    } else {
+      const updatedSong = await SongModel.findOneAndUpdate(
+        { _id: songId },
+        { $addToSet: { favouritedBy: userId } },
+        { new: true }
+      ).exec();
+
+      if (!updatedSong) {
+        return res.status(404).json({ message: "Song not found" });
+      }
+
+      return res.status(200).json({
+        data: updatedSong,
+        token: req.query.token,
+        refreshToken: req.query.refreshToken,
+      });
+    }
   } catch (error) {
-    res
-      .status(500)
-      .send({
-        message: "error toggling favourite",
-        token: req.query.token,
-        refreshToken: req.query.refreshToken,
-      });
+    console.error(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
   }
 };
 
@@ -363,4 +407,5 @@ export {
   updateSong,
   generateStatistics,
   toggleFavourite,
+  fetchFavouritesForUser,
 };
