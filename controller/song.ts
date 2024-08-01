@@ -28,9 +28,6 @@ interface UploadedFiles {
 
 const getSongs = async (req: Request, res: Response): Promise<void> => {
   try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = 6;
-
     let filterDb;
 
     const genres = [
@@ -47,12 +44,9 @@ const getSongs = async (req: Request, res: Response): Promise<void> => {
       filterDb = {};
     }
 
-    const skip = (page - 1) * limit;
-
-    const mySongs = await SongModel.find(filterDb, { createdBy: 0 })
-      .sort({ _id: -1 })
-      .skip(skip)
-      .limit(limit);
+    const mySongs = await SongModel.find(filterDb, { createdBy: 0 }).sort({
+      _id: -1,
+    });
 
     const count = await SongModel.countDocuments(filterDb);
 
