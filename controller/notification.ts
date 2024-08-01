@@ -48,9 +48,17 @@ const getUserNotification = async (req: Request, res: Response) => {
       to: req.query._id,
     }).sort({ _id: -1 });
 
-    res.status(200).send({ data: notifications });
+    res.status(200).send({
+      data: notifications,
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
   } catch (error) {
-    res.status(500).send({ message: "error reading notifications" });
+    res.status(500).send({
+      message: "error reading notifications",
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
   }
 };
 
@@ -77,9 +85,21 @@ const readNotification = async (req: Request, res: Response): Promise<void> => {
       { read: true }
     );
 
-    res.status(200).send({ message: "notifications marked as read" });
+    res
+      .status(200)
+      .send({
+        message: "notifications marked as read",
+        token: req.query.token,
+        refreshToken: req.query.refreshToken,
+      });
   } catch (error) {
-    res.status(500).send({ message: "error reading notification" });
+    res
+      .status(500)
+      .send({
+        message: "error reading notification",
+        token: req.query.token,
+        refreshToken: req.query.refreshToken,
+      });
   }
 };
 

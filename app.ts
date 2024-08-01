@@ -24,10 +24,10 @@ const limiter = rateLimit({
 });
 app.use(
   cors({
-    origin: "https://ux-start.addispay.et",
+    origin: ["https://addis-melody.netlify.app", "http://localhost:5173"],
     methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD",
     exposedHeaders: ["Content-Type", "Authorization"],
-    maxAge: 7200,
+    credentials: true,
   })
 );
 

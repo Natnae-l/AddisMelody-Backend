@@ -4,7 +4,6 @@ import bcrypt from "bcryptjs";
 import fs from "fs";
 import path from "path";
 import { sendNotification } from "./notification";
-import { log } from "util";
 
 interface ToBeUpdated {
   username?: string;
@@ -77,19 +76,19 @@ const login = async (req: Request, res: Response): Promise<void> => {
     // set an http-only cookie here, sameSite="strict"
     const generatedToken = await account.generateToken();
 
-    res.cookie("token", generatedToken.token, {
-      httpOnly: true,
-      domain: "addispay.et",
-    });
-    res.cookie("refreshToken", generatedToken.refreshToken, {
-      httpOnly: true,
-      domain: "addispay.et",
-    });
+    let token = generatedToken.token;
+    let refreshToken = generatedToken.refreshToken;
 
-    res.status(200).json({ message: "Login successful" });
+    res.status(200).json({
+      message: "Login successful",
+      token: token,
+      refreshToken: refreshToken,
+    });
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "Please try again later" });
+    res.status(500).send({
+      error: "Please try again later",
+    });
   }
 };
 
@@ -161,13 +160,17 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
       data: {
         username: updated.username,
         profilePicture: updated.profilePicture,
+        token: req.query.token,
+        refreshToken: req.query.refreshToken,
       },
     });
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .send({ message: "error updating profile, please try again" });
+    res.status(500).send({
+      message: "error updating profile, please try again",
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
   }
 };
 

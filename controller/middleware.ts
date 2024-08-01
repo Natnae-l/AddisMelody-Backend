@@ -5,11 +5,19 @@ import UserModel from "../model/user";
 interface Id {
   _id: string;
 }
+interface Tokens {
+  token: string;
+  refreshToken: string;
+}
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = req.cookies.token;
-    const refreshToken = req.cookies.refreshToken;
+    let authData = req.headers["authorization"]?.slice(7) || "";
+
+    if (authData == "")
+      return res.status(401).send({ message: "invalid request" });
+
+    const { token, refreshToken }: Tokens = JSON.parse(authData);
 
     if (token && refreshToken) {
       let auth;
@@ -31,19 +39,12 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
               _id: auth._id,
             });
             if (!user) {
-              res.clearCookie("token");
-              res.clearCookie("refreshToken");
-
               return res.status(401).json({ message: "not authorized" });
             }
             let generatedToken = await user.generateToken();
 
-            res.cookie("token", generatedToken.token, {
-              httpOnly: false,
-            });
-            res.cookie("refreshToken", generatedToken.refreshToken, {
-              httpOnly: false,
-            });
+            req.query.token = generatedToken.token;
+            req.query.refreshToken = generatedToken.refreshToken;
             req.query._id = auth._id;
             next();
           }

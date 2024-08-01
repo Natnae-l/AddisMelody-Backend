@@ -56,9 +56,18 @@ const getSongs = async (req: Request, res: Response): Promise<void> => {
 
     const count = await SongModel.countDocuments(filterDb);
 
-    res.status(200).send({ songs: mySongs, count: count });
+    res.status(200).send({
+      songs: mySongs,
+      count: count,
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
   } catch (error) {
-    res.status(500).send({ message: "error fetching songs" });
+    res.status(500).send({
+      message: "error fetching songs",
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
   }
 };
 
@@ -67,7 +76,11 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
     const { title, artist, album, genre }: Song = req.body;
 
     if (!(title?.trim() && artist?.trim() && album?.trim() && genre?.trim())) {
-      res.status(400).send({ message: "invalid input" });
+      res.status(400).send({
+        message: "invalid input",
+        token: req.query.token,
+        refreshToken: req.query.refreshToken,
+      });
       return;
     }
 
@@ -98,11 +111,17 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
     res.status(201).send({
       message: "song added successfully",
       data: { ...newSong.toJSON(), createdBy: undefined },
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
     });
   } catch (error) {
     console.log(error);
 
-    res.status(400).send({ message: "Invalid input" });
+    res.status(400).send({
+      message: "Invalid input",
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
   }
 };
 
@@ -156,13 +175,21 @@ const updateSong = async (req: Request, res: Response) => {
     }
 
     if (Object.keys(toBeUpdated).length == 0) {
-      res.status(400).json({ message: "Required fields not supplied" });
+      res.status(400).json({
+        message: "Required fields not supplied",
+        token: req.query.token,
+        refreshToken: req.query.refreshToken,
+      });
       return;
     }
 
     let song = await SongModel.findOne({ _id: req.params.id });
     if (!song) {
-      res.status(404).send({ message: "Song doesn't exist" });
+      res.status(404).send({
+        message: "Song doesn't exist",
+        token: req.query.token,
+        refreshToken: req.query.refreshToken,
+      });
       return;
     }
 
@@ -178,9 +205,15 @@ const updateSong = async (req: Request, res: Response) => {
     res.status(201).send({
       message: "song updated successfully",
       data: { ...song.toJSON(), createdBy: undefined },
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
     });
   } catch (error) {
-    res.status(400).send({ message: "error updating account" });
+    res.status(400).send({
+      message: "error updating account",
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
   }
 };
 
@@ -191,9 +224,17 @@ const deleteSongs = async (req: Request, res: Response): Promise<void> => {
       _id: req.params.id,
     });
 
-    res.status(200).send({ message: "song deleted successfully" });
+    res.status(200).send({
+      message: "song deleted successfully",
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
   } catch (error) {
-    res.status(500).send({ message: "error deleting song" });
+    res.status(500).send({
+      message: "error deleting song",
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
   }
 };
 
@@ -201,7 +242,11 @@ const generateStatistics = async (req: Request, res: Response) => {
   try {
     const createdBy = req.query._id as string;
     if (!createdBy) {
-      return res.status(400).json({ message: "Invalid request" });
+      return res.status(400).json({
+        message: "Invalid request",
+        token: req.query.token,
+        refreshToken: req.query.refreshToken,
+      });
     }
 
     // Aggregation pipeline
@@ -240,7 +285,11 @@ const generateStatistics = async (req: Request, res: Response) => {
 
     // Check if results are empty
     if (results.length === 0) {
-      return res.status(200).json({ message: "No statistics found" });
+      return res.status(200).json({
+        message: "No statistics found",
+        token: req.query.token,
+        refreshToken: req.query.refreshToken,
+      });
     }
 
     const statistics = results[0];
@@ -257,10 +306,18 @@ const generateStatistics = async (req: Request, res: Response) => {
       genreSongCounts: statistics.genreSongCounts || [],
       artistSongCounts: statistics.artistSongCounts || [],
       favoriteSongsCount: statistics.favoriteSongsCount?.[0]?.count || 0,
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
     });
   } catch (error: any) {
     console.error("Error generating statistics:", error);
-    res.status(500).json({ message: "Error getting statistics" });
+    res
+      .status(500)
+      .json({
+        message: "Error getting statistics",
+        token: req.query.token,
+        refreshToken: req.query.refreshToken,
+      });
   }
 };
 
@@ -280,9 +337,21 @@ const toggleFavourite = async (req: Request, res: Response) => {
     }
 
     song = await song.save();
-    res.status(200).send({ data: song.toJSON() });
+    res
+      .status(200)
+      .send({
+        data: song.toJSON(),
+        token: req.query.token,
+        refreshToken: req.query.refreshToken,
+      });
   } catch (error) {
-    res.status(500).send({ message: "error toggling favourite" });
+    res
+      .status(500)
+      .send({
+        message: "error toggling favourite",
+        token: req.query.token,
+        refreshToken: req.query.refreshToken,
+      });
   }
 };
 
