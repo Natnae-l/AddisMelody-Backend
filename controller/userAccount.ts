@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import UserModel, { User } from "../model/user";
 import bcrypt from "bcryptjs";
-import fs from "fs";
+import fs, { truncateSync } from "fs";
 import path from "path";
 import { sendNotification } from "./notification";
 
@@ -73,11 +73,21 @@ const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // set an http-only cookie here, sameSite="strict"
     const generatedToken = await account.generateToken();
 
     let token = generatedToken.token;
     let refreshToken = generatedToken.refreshToken;
+
+    res.cookie("token", token, {
+      secure: true,
+      httpOnly: true,
+      sameSite: "strict",
+    });
+    res.cookie("refreshToken", refreshToken, {
+      secure: true,
+      httpOnly: true,
+      sameSite: "strict",
+    });
 
     res.status(200).json({
       message: "Login successful",
@@ -94,10 +104,11 @@ const login = async (req: Request, res: Response): Promise<void> => {
 
 const updateProfile = async (req: Request, res: Response): Promise<void> => {
   try {
+    console.log(req.body);
+
     const updateAllowed: Array<keyof ToBeUpdated> = [
       "username",
       "profilePicture",
-      "password",
     ];
     const body: ToBeUpdated = req.body;
 
@@ -154,14 +165,15 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
     }
 
     const updated = await updateAccount.save();
+    console.log(updated);
 
     res.status(200).send({
       message: "profile updated successfully",
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
       data: {
         username: updated.username,
         profilePicture: updated.profilePicture,
-        token: req.query.token,
-        refreshToken: req.query.refreshToken,
       },
     });
   } catch (error) {
@@ -180,23 +192,14 @@ const getProfilePicture = async (
 ): Promise<void> => {
   try {
     const imageName = req.params.image;
-    const user: User | null = await UserModel.findById(req.query._id as string);
-
-    if (
-      !(
-        user &&
-        user?.profilePicture !=
-          process.env.SERVER_URL + `/account/profile/${imageName}`
-      )
-    ) {
-      res.status(404).send({ message: "invalid input" });
-      return;
-    }
+    console.log(imageName);
     if (!imageName) {
       res.status(404).send({ message: "profile picture unavailable" });
     }
     res.status(200).sendFile(path.join(__dirname, `../uploads/${imageName}`));
   } catch (error) {
+    console.log(error);
+
     res.status(404).send({ message: "invalid request" });
   }
 };

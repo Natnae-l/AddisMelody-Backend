@@ -52,10 +52,6 @@ const songSchema = new Schema(
     audio: {
       type: String,
     },
-    favourite: {
-      type: Boolean,
-      default: false,
-    },
     favouritedBy: [
       {
         type: Schema.Types.ObjectId,

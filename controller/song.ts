@@ -11,6 +11,7 @@ interface Song {
   genre: string;
   banner?: string;
   audio?: string;
+  private: boolean;
 }
 
 interface ToBeUpdated {
@@ -39,20 +40,17 @@ const getSongs = async (req: Request, res: Response): Promise<void> => {
     ];
 
     if (req.query.genre && genres.includes(req.query.genre as string)) {
-      filterDb = { genre: req.query.genre, public: true };
+      filterDb = { genre: req.query.genre, private: false };
     } else {
-      filterDb = { public: true };
+      filterDb = { private: false };
     }
 
     const mySongs = await SongModel.find(filterDb, { createdBy: 0 }).sort({
       _id: -1,
     });
 
-    const count = await SongModel.countDocuments(filterDb);
-
     res.status(200).send({
       songs: mySongs,
-      count: count,
       token: req.query.token,
       refreshToken: req.query.refreshToken,
     });
@@ -84,7 +82,7 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
       artist,
       album,
       genre,
-      private: req.body.private || false,
+      private: !!!req.body.private,
     });
 
     const files = req.files ? (req.files as UploadedFiles) : null;
@@ -122,6 +120,7 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
 const getFile = async (req: Request, res: Response): Promise<void> => {
   try {
     const fileName = req.params.file;
+    console.log(fileName);
 
     if (!fileName) {
       res.status(404).send({ message: "requested file unavailable" });
@@ -129,6 +128,8 @@ const getFile = async (req: Request, res: Response): Promise<void> => {
     }
     res.status(200).sendFile(path.join(__dirname, `../uploads/${fileName}`));
   } catch (error) {
+    console.log(error);
+
     res.status(404).send({ message: "invalid request" });
   }
 };
@@ -266,10 +267,6 @@ const generateStatistics = async (req: Request, res: Response) => {
           artistSongCounts: [
             { $group: { _id: "$artist", count: { $sum: 1 } } },
           ],
-          favoriteSongsCount: [
-            { $match: { favourite: true } },
-            { $count: "count" },
-          ],
         },
       },
     ];
@@ -299,7 +296,6 @@ const generateStatistics = async (req: Request, res: Response) => {
       albumSongCounts: statistics.albumSongCounts || [],
       genreSongCounts: statistics.genreSongCounts || [],
       artistSongCounts: statistics.artistSongCounts || [],
-      favoriteSongsCount: statistics.favoriteSongsCount?.[0]?.count || 0,
       token: req.query.token,
       refreshToken: req.query.refreshToken,
     });
@@ -345,6 +341,19 @@ const toggleFavourite = async (req: Request, res: Response) => {
   const songId = req.params.id;
 
   try {
+    const songAddedBy = await SongModel.findOne({
+      createdBy: userId,
+      _id: songId,
+    });
+    if (songAddedBy) {
+      await SongModel.findOneAndDelete({ createdBy: userId, _id: songId });
+
+      res.status(200).send({
+        token: req.query.token,
+        refreshToken: req.query.refreshToken,
+      });
+      return;
+    }
     const song = await SongModel.findOne({
       _id: songId,
       favouritedBy: userId,

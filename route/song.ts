@@ -12,7 +12,7 @@ import {
 } from "../controller/song";
 import upload from "../controller/multer";
 
-const router: Router = express();
+const router: Router = express.Router();
 
 router.get("/list", auth, getSongs);
 router.post(

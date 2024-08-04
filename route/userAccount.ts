@@ -14,7 +14,7 @@ const router: Router = express.Router();
 router.post("/create", createAccount);
 router.put("/login", login);
 router.patch("/update", auth, upload.single("profilePicture"), updateProfile);
-router.get("/profile/uploads/:image", auth, getProfilePicture);
+router.get("/profile/uploads/:image", getProfilePicture);
 
 export default router;
 
