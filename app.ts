@@ -55,14 +55,17 @@ app.use((req: Request, res: Response) => {
 });
 
 // connect to database and start the application
-mongoose
-  .connect(process.env.MONGO_URL as string)
-  .then(() => {
-    app.listen(process.env.PORT, () =>
-      console.log(`app started listening on port: ${process.env.PORT}`)
-    );
-  })
-  .catch((err) => {
-    console.log(err);
-    throw err;
-  });
+mongoose.connect(process.env.MONGO_URL as string).then(() => {
+  app.listen(process.env.PORT, () =>
+    console.log(`app started listening on port: ${process.env.PORT}`)
+  );
+});
+
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception thrown:", err);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+});
