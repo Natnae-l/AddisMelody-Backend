@@ -12,13 +12,6 @@ interface Tokens {
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // let authData = req.headers["authorization"]?.slice(7) || "";
-
-    // if (authData == "")
-    //   return res.status(401).send({ message: "invalid request" });
-
-    // const { token, refreshToken }: Tokens = JSON.parse(authData);
-
     const token = req.cookies.token;
     const refreshToken = req.cookies.refreshToken;
 

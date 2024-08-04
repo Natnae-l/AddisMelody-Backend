@@ -40,9 +40,13 @@ const getSongs = async (req: Request, res: Response): Promise<void> => {
     ];
 
     if (req.query.genre && genres.includes(req.query.genre as string)) {
-      filterDb = { genre: req.query.genre, private: false };
+      filterDb = {
+        genre: req.query.genre,
+        createdBy: { $ne: req.query._id },
+        private: false,
+      };
     } else {
-      filterDb = { private: false };
+      filterDb = { private: false, createdBy: { $ne: req.query._id } };
     }
 
     const mySongs = await SongModel.find(filterDb, { createdBy: 0 }).sort({
