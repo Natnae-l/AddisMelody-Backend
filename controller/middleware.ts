@@ -12,12 +12,15 @@ interface Tokens {
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    let authData = req.headers["authorization"]?.slice(7) || "";
+    // let authData = req.headers["authorization"]?.slice(7) || "";
 
-    if (authData == "")
-      return res.status(401).send({ message: "invalid request" });
+    // if (authData == "")
+    //   return res.status(401).send({ message: "invalid request" });
 
-    const { token, refreshToken }: Tokens = JSON.parse(authData);
+    // const { token, refreshToken }: Tokens = JSON.parse(authData);
+
+    const token = req.cookies.token;
+    const refreshToken = req.cookies.refreshToken;
 
     if (token && refreshToken) {
       let auth;
@@ -42,6 +45,17 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
               return res.status(401).json({ message: "not authorized" });
             }
             let generatedToken = await user.generateToken();
+
+            res.cookie("token", token, {
+              secure: true,
+              httpOnly: true,
+              sameSite: "none",
+            });
+            res.cookie("refreshToken", refreshToken, {
+              secure: true,
+              httpOnly: true,
+              sameSite: "none",
+            });
 
             req.query.token = generatedToken.token;
             req.query.refreshToken = generatedToken.refreshToken;

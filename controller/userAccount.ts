@@ -81,12 +81,12 @@ const login = async (req: Request, res: Response): Promise<void> => {
     res.cookie("token", token, {
       secure: true,
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: "none",
     });
     res.cookie("refreshToken", refreshToken, {
       secure: true,
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: "none",
     });
 
     res.status(200).json({
