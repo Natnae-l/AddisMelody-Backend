@@ -2,8 +2,11 @@ import { Request, Response } from "express";
 import SongModel from "../model/song";
 import path from "path";
 import mongoose from "mongoose";
-import { sendNotification, sendStatistics } from "./notification";
-import { StringExpression } from "mongoose";
+import {
+  sendNotification,
+  sendNotificationOne,
+  sendStatistics,
+} from "./notification";
 
 interface Song {
   createdBy: string;
@@ -344,8 +347,8 @@ const toggleFavourite = async (req: Request, res: Response) => {
         return res.status(404).json({ message: "Song not found" });
       }
 
-      sendNotification({
-        to: updatedSong.createdBy as string,
+      sendNotificationOne(updatedSong.createdBy, {
+        to: updatedSong.createdBy,
         title: "favourite",
         body: "your musics are getting listeners!",
         time: Date.now(),

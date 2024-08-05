@@ -145,6 +145,19 @@ const sendStatistics = async (to: string, statistics: any) => {
   }
 };
 
+const sendNotificationOne = async (to: string, statistics: any) => {
+  if (save.has(to)) {
+    for (let res of save.get(to)) {
+      res.write(
+        `data:${JSON.stringify({
+          type: "notification",
+          data: statistics,
+        })}\n\n`
+      );
+    }
+  }
+};
+
 const readNotification = async (req: Request, res: Response): Promise<void> => {
   const time = req.query.time;
   try {
@@ -175,4 +188,5 @@ export {
   readNotification,
   getUserNotification,
   sendStatistics,
+  sendNotificationOne,
 };
