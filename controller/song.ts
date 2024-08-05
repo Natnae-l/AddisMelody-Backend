@@ -348,7 +348,7 @@ const toggleFavourite = async (req: Request, res: Response) => {
       }
 
       sendNotificationOne(updatedSong.createdBy, {
-        to: updatedSong.createdBy,
+        to: String(updatedSong.createdBy),
         title: "favourite",
         body: "your musics are getting listeners!",
         time: Date.now(),
