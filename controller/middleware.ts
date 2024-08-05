@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import UserModel from "../model/user";
 
-interface Id {
+export interface Id {
   _id: string;
 }
 interface Tokens {

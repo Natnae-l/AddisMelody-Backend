@@ -343,6 +343,14 @@ const toggleFavourite = async (req: Request, res: Response) => {
         return res.status(404).json({ message: "Song not found" });
       }
 
+      sendNotification({
+        to: updatedSong.createdBy,
+        title: "favourite",
+        body: "your music are getting listeners!",
+        time: Date.now(),
+        read: false,
+      });
+
       return res.status(200).json({
         data: updatedSong,
         token: req.query.token,
