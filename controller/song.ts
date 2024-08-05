@@ -3,6 +3,7 @@ import SongModel from "../model/song";
 import path from "path";
 import mongoose from "mongoose";
 import { sendNotification, sendStatistics } from "./notification";
+import { StringExpression } from "mongoose";
 
 interface Song {
   createdBy: string;
@@ -344,9 +345,9 @@ const toggleFavourite = async (req: Request, res: Response) => {
       }
 
       sendNotification({
-        to: updatedSong.createdBy,
+        to: req.query._id as string,
         title: "favourite",
-        body: "your music are getting listeners!",
+        body: "your musics are getting listeners!",
         time: Date.now(),
         read: false,
       });
