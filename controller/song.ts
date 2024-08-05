@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import SongModel from "../model/song";
 import path from "path";
 import mongoose from "mongoose";
-import { sendNotification } from "./notification";
+import { sendNotification, sendStatistics } from "./notification";
 
 interface Song {
   createdBy: string;
@@ -113,6 +113,9 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
       token: req.query.token,
       refreshToken: req.query.refreshToken,
     });
+
+    const stats = await statisticsGenerator(req.query._id as string);
+    await sendStatistics(req.query._id as string, stats);
   } catch (error) {
     console.log(error);
 
@@ -355,6 +358,7 @@ const toggleFavourite = async (req: Request, res: Response) => {
     });
   }
 };
+
 const statisticsGenerator = async (createdBy: string) => {
   try {
     // Aggregation pipeline

@@ -86,39 +86,16 @@ const sendNotification = async (notification: Notification): Promise<void> => {
   }
 };
 
-const sendStatistics = async (notTo: string, statistics: any) => {
-  const sendTo: any[] = [];
-  save.forEach((item) => {
-    if (item != notTo) {
-      sendTo.push(...Array.from(save.get(item)));
+const sendStatistics = async (to: string, statistics: any) => {
+  if (save.has(to)) {
+    for (let res of save.get(to)) {
+      res.write(
+        `data:${JSON.stringify({
+          type: "statistics",
+          data: statistics,
+        })}\n\n`
+      );
     }
-  });
-
-  for (let res of sendTo) {
-    res.write(
-      `data:${JSON.stringify({
-        type: "statistics",
-        data: statistics,
-      })}\n\n`
-    );
-  }
-};
-
-const sendSongs = async (notTo: string, songs: any) => {
-  const sendTo: any[] = [];
-  save.forEach((item) => {
-    if (item != notTo) {
-      sendTo.push(...Array.from(save.get(item)));
-    }
-  });
-
-  for (let res of sendTo) {
-    res.write(
-      `data:${JSON.stringify({
-        type: "songs",
-        data: songs,
-      })}\n\n`
-    );
   }
 };
 
@@ -151,6 +128,5 @@ export {
   sendNotification,
   readNotification,
   getUserNotification,
-  sendSongs,
   sendStatistics,
 };
