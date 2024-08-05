@@ -159,7 +159,8 @@ const sendNotificationOne = async (to: string, statistics: any) => {
 };
 
 const readNotification = async (req: Request, res: Response): Promise<void> => {
-  const time = req.query.time;
+  const time = req.params.time;
+
   try {
     await NotificationModel.updateMany(
       {
