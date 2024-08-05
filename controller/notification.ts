@@ -11,14 +11,26 @@ interface Notification {
   read: boolean;
 }
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://addis-melody.netlify.app",
+];
+
 const getNotified = (req: Request, res: Response) => {
-  const id = req.query._id || req.query.id;
+  const id = req.cookies.token;
+  const origin = req.headers.origin as string;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  } else {
+    res.setHeader("Access-Control-Allow-Origin", "null");
+  }
 
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache",
     Connection: "keep-alive",
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Credentials": "true", // If credentials are required
     "Access-Control-Allow-Methods": "*",
   });
 
@@ -28,13 +40,7 @@ const getNotified = (req: Request, res: Response) => {
     save.set(id, new Set());
     save.get(id).add(res);
   }
-  sendNotification({
-    to: "1",
-    title: "Welcome to AddisMelody",
-    body: "explore and add musics you like!",
-    time: Date.now(),
-    read: false,
-  });
+  console.log(save);
 
   req.on("close", () => {
     console.log(`Connection closed for merchant ${id}`);
@@ -66,12 +72,53 @@ const sendNotification = async (notification: Notification): Promise<void> => {
   try {
     if (save.has(notification.to)) {
       for (let res of save.get(notification.to)) {
-        res.write(`data:${JSON.stringify(notification)}\n\n`);
+        res.write(
+          `data:${JSON.stringify({
+            type: "notification",
+            data: notification,
+          })}\n\n`
+        );
       }
     }
     await NotificationModel.create(notification);
   } catch (error: any) {
     throw new Error(error.message);
+  }
+};
+
+const sendStatistics = async (notTo: string, statistics: any) => {
+  const sendTo: any[] = [];
+  save.forEach((item) => {
+    if (item != notTo) {
+      sendTo.push(...Array.from(save.get(item)));
+    }
+  });
+
+  for (let res of sendTo) {
+    res.write(
+      `data:${JSON.stringify({
+        type: "statistics",
+        data: statistics,
+      })}\n\n`
+    );
+  }
+};
+
+const sendSongs = async (notTo: string, songs: any) => {
+  const sendTo: any[] = [];
+  save.forEach((item) => {
+    if (item != notTo) {
+      sendTo.push(...Array.from(save.get(item)));
+    }
+  });
+
+  for (let res of sendTo) {
+    res.write(
+      `data:${JSON.stringify({
+        type: "songs",
+        data: songs,
+      })}\n\n`
+    );
   }
 };
 
@@ -85,22 +132,25 @@ const readNotification = async (req: Request, res: Response): Promise<void> => {
       { read: true }
     );
 
-    res
-      .status(200)
-      .send({
-        message: "notifications marked as read",
-        token: req.query.token,
-        refreshToken: req.query.refreshToken,
-      });
+    res.status(200).send({
+      message: "notifications marked as read",
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .send({
-        message: "error reading notification",
-        token: req.query.token,
-        refreshToken: req.query.refreshToken,
-      });
+    res.status(500).send({
+      message: "error reading notification",
+      token: req.query.token,
+      refreshToken: req.query.refreshToken,
+    });
   }
 };
 
-export { getNotified, sendNotification, readNotification, getUserNotification };
+export {
+  getNotified,
+  sendNotification,
+  readNotification,
+  getUserNotification,
+  sendSongs,
+  sendStatistics,
+};

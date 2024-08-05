@@ -8,7 +8,7 @@ import auth from "../controller/middleware";
 
 const router: Router = express.Router();
 
-router.get("/", auth, getNotified);
+router.get("/", getNotified);
 router.get("/list", auth, getUserNotification);
 router.patch("/read/:time", auth, readNotification);
 

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import SongModel from "../model/song";
 import path from "path";
 import mongoose from "mongoose";
+import { sendNotification } from "./notification";
 
 interface Song {
   createdBy: string;
@@ -59,6 +60,8 @@ const getSongs = async (req: Request, res: Response): Promise<void> => {
       refreshToken: req.query.refreshToken,
     });
   } catch (error) {
+    console.log(error);
+
     res.status(500).send({
       message: "error fetching songs",
       token: req.query.token,
@@ -248,67 +251,14 @@ const generateStatistics = async (req: Request, res: Response) => {
       });
     }
 
-    // Aggregation pipeline
-    const aggregationPipeline = [
-      { $match: { createdBy: new mongoose.Types.ObjectId(createdBy) } },
-      {
-        $facet: {
-          totalSongs: [{ $count: "count" }],
-          totalArtists: [{ $group: { _id: "$artist" } }, { $count: "count" }],
-          totalAlbums: [{ $group: { _id: "$album" } }, { $count: "count" }],
-          totalGenres: [{ $group: { _id: "$genre" } }, { $count: "count" }],
-          genreCounts: [{ $group: { _id: "$genre", count: { $sum: 1 } } }],
-          artistAlbumCounts: [
-            {
-              $group: {
-                _id: { artist: "$artist", album: "$album" },
-                count: { $sum: 1 },
-              },
-            },
-          ],
-          albumSongCounts: [{ $group: { _id: "$album", count: { $sum: 1 } } }],
-          genreSongCounts: [{ $group: { _id: "$genre", count: { $sum: 1 } } }],
-          artistSongCounts: [
-            { $group: { _id: "$artist", count: { $sum: 1 } } },
-          ],
-        },
-      },
-    ];
-
-    // Run the aggregation pipeline
-    const results = await SongModel.aggregate(aggregationPipeline);
-
-    // Check if results are empty
-    if (results.length === 0) {
-      return res.status(200).json({
-        message: "No statistics found",
-        token: req.query.token,
-        refreshToken: req.query.refreshToken,
-      });
-    }
-
-    const statistics = results[0];
+    const statistics = await statisticsGenerator(createdBy);
 
     // Construct the response
-    res.status(200).json({
-      totalSongs: statistics.totalSongs?.[0]?.count || 0,
-      totalArtists: statistics.totalArtists?.[0]?.count || 0,
-      totalAlbums: statistics.totalAlbums?.[0]?.count || 0,
-      totalGenres: statistics.totalGenres?.[0]?.count || 0,
-      genreCounts: statistics.genreCounts || [],
-      artistAlbumCounts: statistics.artistAlbumCounts || [],
-      albumSongCounts: statistics.albumSongCounts || [],
-      genreSongCounts: statistics.genreSongCounts || [],
-      artistSongCounts: statistics.artistSongCounts || [],
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
-    });
+    res.status(200).json(statistics);
   } catch (error: any) {
     console.error("Error generating statistics:", error);
     res.status(500).json({
       message: "Error getting statistics",
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   }
 };
@@ -405,8 +355,58 @@ const toggleFavourite = async (req: Request, res: Response) => {
     });
   }
 };
+const statisticsGenerator = async (createdBy: string) => {
+  try {
+    // Aggregation pipeline
+    const aggregationPipeline = [
+      { $match: { createdBy: new mongoose.Types.ObjectId(createdBy) } },
+      {
+        $facet: {
+          totalSongs: [{ $count: "count" }],
+          totalArtists: [{ $group: { _id: "$artist" } }, { $count: "count" }],
+          totalAlbums: [{ $group: { _id: "$album" } }, { $count: "count" }],
+          totalGenres: [{ $group: { _id: "$genre" } }, { $count: "count" }],
+          genreCounts: [{ $group: { _id: "$genre", count: { $sum: 1 } } }],
+          artistAlbumCounts: [
+            {
+              $group: {
+                _id: { artist: "$artist", album: "$album" },
+                count: { $sum: 1 },
+              },
+            },
+          ],
+          albumSongCounts: [{ $group: { _id: "$album", count: { $sum: 1 } } }],
+          genreSongCounts: [{ $group: { _id: "$genre", count: { $sum: 1 } } }],
+          artistSongCounts: [
+            { $group: { _id: "$artist", count: { $sum: 1 } } },
+          ],
+        },
+      },
+    ];
 
+    // Run the aggregation pipeline
+    const results = await SongModel.aggregate(aggregationPipeline);
+
+    const statistics = results[0];
+
+    // Construct the response
+    return {
+      totalSongs: statistics.totalSongs?.[0]?.count || 0,
+      totalArtists: statistics.totalArtists?.[0]?.count || 0,
+      totalAlbums: statistics.totalAlbums?.[0]?.count || 0,
+      totalGenres: statistics.totalGenres?.[0]?.count || 0,
+      genreCounts: statistics.genreCounts || [],
+      artistAlbumCounts: statistics.artistAlbumCounts || [],
+      albumSongCounts: statistics.albumSongCounts || [],
+      genreSongCounts: statistics.genreSongCounts || [],
+      artistSongCounts: statistics.artistSongCounts || [],
+    };
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
 export {
+  statisticsGenerator,
   getSongs,
   saveSongs,
   getFile,
