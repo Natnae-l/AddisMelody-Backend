@@ -90,19 +90,19 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
     album = validator.blacklist(album, escape);
     genre = validator.blacklist(genre, escape);
 
-    if (title.length > 70) {
+    if (title.length > 30) {
       res.status(400).send({ message: "input value too long" });
       return;
     }
-    if (artist.length > 70) {
+    if (artist.length > 30) {
       res.status(400).send({ message: "input value too long" });
       return;
     }
-    if (album.length > 70) {
+    if (album.length > 30) {
       res.status(400).send({ message: "input value too long" });
       return;
     }
-    if (genre.length > 70) {
+    if (genre.length > 30) {
       res.status(400).send({ message: "input value too long" });
       return;
     }
@@ -190,7 +190,7 @@ const updateSong = async (req: Request, res: Response) => {
           body[prop as keyof ToBeUpdated] as string,
           escape
         );
-        if (toBeUpdated[prop as keyof ToBeUpdated]?.length ?? 0 > 70) {
+        if (toBeUpdated[prop as keyof ToBeUpdated]?.length ?? 0 > 30) {
           res.status(400).send({ message: "input value too long" });
         }
       }
