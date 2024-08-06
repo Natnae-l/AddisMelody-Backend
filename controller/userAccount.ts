@@ -20,6 +20,13 @@ const createAccount = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    if (username.length > 20) {
+      res.status(400).send({ message: "input value too long" });
+    }
+    if (password.length > 20) {
+      res.status(400).send({ message: "input value too long" });
+    }
+
     password = await bcrypt.hash(password, 8);
 
     const alreadyExist = await UserModel.findOne({ username: username });
@@ -131,6 +138,10 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
       if (updateAllowed.includes(update as keyof ToBeUpdated)) {
         toBeUpdated[update as keyof ToBeUpdated] =
           body[update as keyof ToBeUpdated];
+        if (toBeUpdated[update as keyof ToBeUpdated]) {
+          res.status(400).send({ message: "input value too long" });
+          return;
+        }
       }
     }
 

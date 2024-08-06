@@ -2,11 +2,8 @@ import { Request, Response } from "express";
 import SongModel from "../model/song";
 import path from "path";
 import mongoose from "mongoose";
-import {
-  sendNotification,
-  sendNotificationOne,
-  sendStatistics,
-} from "./notification";
+import { sendNotification, sendStatistics } from "./notification";
+import validator from "validator";
 
 interface Song {
   createdBy: string;
@@ -76,7 +73,7 @@ const getSongs = async (req: Request, res: Response): Promise<void> => {
 
 const saveSongs = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { title, artist, album, genre }: Song = req.body;
+    let { title, artist, album, genre }: Song = req.body;
 
     if (!(title?.trim() && artist?.trim() && album?.trim() && genre?.trim())) {
       res.status(400).send({
@@ -84,6 +81,29 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
         token: req.query.token,
         refreshToken: req.query.refreshToken,
       });
+      return;
+    }
+
+    const escape = "\\[\\]^*()_+-~`;:'";
+    title = validator.blacklist(title, escape);
+    artist = validator.blacklist(artist, escape);
+    album = validator.blacklist(album, escape);
+    genre = validator.blacklist(genre, escape);
+
+    if (title.length > 70) {
+      res.status(400).send({ message: "input value too long" });
+      return;
+    }
+    if (artist.length > 70) {
+      res.status(400).send({ message: "input value too long" });
+      return;
+    }
+    if (album.length > 70) {
+      res.status(400).send({ message: "input value too long" });
+      return;
+    }
+    if (genre.length > 70) {
+      res.status(400).send({ message: "input value too long" });
       return;
     }
 
@@ -162,11 +182,17 @@ const updateSong = async (req: Request, res: Response) => {
     ];
 
     const toBeUpdated: ToBeUpdated = {};
+    const escape = "\\[\\]^*()_+-~`;:'";
 
     for (let prop in body) {
       if (updates.includes(prop as keyof ToBeUpdated)) {
-        toBeUpdated[prop as keyof ToBeUpdated] =
-          body[prop as keyof ToBeUpdated];
+        toBeUpdated[prop as keyof ToBeUpdated] = validator.blacklist(
+          body[prop as keyof ToBeUpdated] as string,
+          escape
+        );
+        if (toBeUpdated[prop as keyof ToBeUpdated]?.length ?? 0 > 70) {
+          res.status(400).send({ message: "input value too long" });
+        }
       }
     }
 
