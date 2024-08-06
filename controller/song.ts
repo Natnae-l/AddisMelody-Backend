@@ -113,7 +113,7 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
 
     res.status(201).send({
       message: "song added successfully",
-      data: { ...newSong.toJSON(), createdBy: undefined },
+      data: { ...newSong.toJSON() },
       token: req.query.token,
       refreshToken: req.query.refreshToken,
     });
@@ -213,13 +213,13 @@ const updateSong = async (req: Request, res: Response) => {
 
     res.status(201).send({
       message: "song updated successfully",
-      data: { ...song.toJSON(), createdBy: undefined },
+      data: { ...song.toJSON() },
       token: req.query.token,
       refreshToken: req.query.refreshToken,
     });
   } catch (error) {
     res.status(400).send({
-      message: "error updating account",
+      message: "error updating song",
       token: req.query.token,
       refreshToken: req.query.refreshToken,
     });
