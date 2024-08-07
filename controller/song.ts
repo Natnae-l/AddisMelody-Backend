@@ -88,8 +88,6 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
     validator.blacklist(album, escape);
     validator.blacklist(genre, escape);
 
-    console.log({ title, artist, album, genre });
-
     if (title.length > 60) {
       res.status(400).send({ message: "input value too long" });
       return;
@@ -154,7 +152,6 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
 const getFile = async (req: Request, res: Response): Promise<void> => {
   try {
     const fileName = req.params.file;
-    console.log(fileName);
 
     if (!fileName) {
       res.status(404).send({ message: "requested file unavailable" });
