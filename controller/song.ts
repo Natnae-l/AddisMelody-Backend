@@ -340,6 +340,9 @@ const toggleFavourite = async (req: Request, res: Response) => {
         token: req.query.token,
         refreshToken: req.query.refreshToken,
       });
+      const stats = await statisticsGenerator(req.query._id as string);
+
+      sendStatistics(userId, stats);
       return;
     }
     const song = await SongModel.findOne({
