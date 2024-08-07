@@ -136,10 +136,6 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
       if (updateAllowed.includes(update as keyof ToBeUpdated)) {
         toBeUpdated[update as keyof ToBeUpdated] =
           body[update as keyof ToBeUpdated];
-        if ((toBeUpdated[update as keyof ToBeUpdated]?.length ?? 0) > 60) {
-          res.status(400).send({ message: "input value too long" });
-          return;
-        }
       }
     }
 
