@@ -104,8 +104,6 @@ const login = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({
       message: "Login successful",
       userId: account._id,
-      token: token,
-      refreshToken: refreshToken,
     });
   } catch (error) {
     console.log(error);
@@ -186,8 +184,6 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).send({
       message: "profile updated successfully",
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
       data: {
         username: updated.username,
         profilePicture: updated.profilePicture,
@@ -197,8 +193,6 @@ const updateProfile = async (req: Request, res: Response): Promise<void> => {
     console.log(error);
     res.status(500).send({
       message: "error updating profile, please try again",
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   }
 };

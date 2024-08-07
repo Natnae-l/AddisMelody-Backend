@@ -102,14 +102,10 @@ const getUserNotification = async (req: Request, res: Response) => {
 
     res.status(200).send({
       data: notifications,
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   } catch (error) {
     res.status(500).send({
       message: "error reading notifications",
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   }
 };
@@ -177,8 +173,6 @@ const readNotification = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(500).send({
       message: "error reading notification",
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   }
 };

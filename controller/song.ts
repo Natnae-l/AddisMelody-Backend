@@ -57,16 +57,12 @@ const getSongs = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).send({
       songs: mySongs,
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   } catch (error) {
     console.log(error);
 
     res.status(500).send({
       message: "error fetching songs",
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   }
 };
@@ -132,8 +128,6 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
     res.status(201).send({
       message: "song added successfully",
       data: { ...newSong.toJSON() },
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
 
     const stats = await statisticsGenerator(req.query._id as string);
@@ -143,8 +137,6 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
 
     res.status(400).send({
       message: "Invalid input",
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   }
 };
@@ -210,8 +202,6 @@ const updateSong = async (req: Request, res: Response) => {
     if (Object.keys(toBeUpdated).length == 0) {
       res.status(400).json({
         message: "Required fields not supplied",
-        token: req.query.token,
-        refreshToken: req.query.refreshToken,
       });
       return;
     }
@@ -220,8 +210,6 @@ const updateSong = async (req: Request, res: Response) => {
     if (!song) {
       res.status(404).send({
         message: "Song doesn't exist",
-        token: req.query.token,
-        refreshToken: req.query.refreshToken,
       });
       return;
     }
@@ -238,14 +226,10 @@ const updateSong = async (req: Request, res: Response) => {
     res.status(201).send({
       message: "song updated successfully",
       data: { ...song.toJSON() },
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   } catch (error) {
     res.status(400).send({
       message: "error updating song",
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   }
 };
@@ -259,14 +243,10 @@ const deleteSongs = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).send({
       message: "song deleted successfully",
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   } catch (error) {
     res.status(500).send({
       message: "error deleting song",
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   }
 };
@@ -277,8 +257,6 @@ const generateStatistics = async (req: Request, res: Response) => {
     if (!createdBy) {
       return res.status(400).json({
         message: "Invalid request",
-        token: req.query.token,
-        refreshToken: req.query.refreshToken,
       });
     }
 
@@ -308,15 +286,11 @@ const fetchFavouritesForUser = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       data: favourites,
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   } catch (error) {
     console.error("Error", error);
     return res.status(500).json({
       message: "Internal Server Error",
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   }
 };
@@ -333,10 +307,7 @@ const toggleFavourite = async (req: Request, res: Response) => {
     if (songAddedBy) {
       await SongModel.findOneAndDelete({ createdBy: userId, _id: songId });
 
-      res.status(200).send({
-        token: req.query.token,
-        refreshToken: req.query.refreshToken,
-      });
+      res.status(200).send({});
       const stats = await statisticsGenerator(req.query._id as string);
 
       sendStatistics(userId, stats);
@@ -360,8 +331,6 @@ const toggleFavourite = async (req: Request, res: Response) => {
 
       return res.status(200).json({
         data: updatedSong,
-        token: req.query.token,
-        refreshToken: req.query.refreshToken,
       });
     } else {
       const updatedSong = await SongModel.findOneAndUpdate(
@@ -384,16 +353,12 @@ const toggleFavourite = async (req: Request, res: Response) => {
 
       return res.status(200).json({
         data: updatedSong,
-        token: req.query.token,
-        refreshToken: req.query.refreshToken,
       });
     }
   } catch (error) {
     console.error(error);
     return res.status(500).json({
       message: "Internal Server Error",
-      token: req.query.token,
-      refreshToken: req.query.refreshToken,
     });
   }
 };
