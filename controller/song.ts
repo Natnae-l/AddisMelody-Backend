@@ -190,7 +190,7 @@ const updateSong = async (req: Request, res: Response) => {
         toBeUpdated[prop as keyof ToBeUpdated] = body[
           prop as keyof ToBeUpdated
         ] as string;
-        if (toBeUpdated[prop as keyof ToBeUpdated]?.length ?? 0 > 60) {
+        if ((toBeUpdated[prop as keyof ToBeUpdated]?.length ?? 0) > 60) {
           res.status(400).send({ message: "input value too long" });
           return;
         }
