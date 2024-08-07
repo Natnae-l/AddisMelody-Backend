@@ -78,17 +78,17 @@ const saveSongs = async (req: Request, res: Response): Promise<void> => {
     if (!(title?.trim() && artist?.trim() && album?.trim() && genre?.trim())) {
       res.status(400).send({
         message: "invalid input",
-        token: req.query.token,
-        refreshToken: req.query.refreshToken,
       });
       return;
     }
 
     const escape = "\\[\\]^*()_+-~`;:'";
-    title = validator.blacklist(title, escape);
-    artist = validator.blacklist(artist, escape);
-    album = validator.blacklist(album, escape);
-    genre = validator.blacklist(genre, escape);
+    validator.blacklist(title, escape);
+    validator.blacklist(artist, escape);
+    validator.blacklist(album, escape);
+    validator.blacklist(genre, escape);
+
+    console.log({ title, artist, album, genre });
 
     if (title.length > 30) {
       res.status(400).send({ message: "input value too long" });
@@ -186,10 +186,10 @@ const updateSong = async (req: Request, res: Response) => {
 
     for (let prop in body) {
       if (updates.includes(prop as keyof ToBeUpdated)) {
-        toBeUpdated[prop as keyof ToBeUpdated] = validator.blacklist(
-          body[prop as keyof ToBeUpdated] as string,
-          escape
-        );
+        validator.blacklist(body[prop as keyof ToBeUpdated] as string, escape);
+        toBeUpdated[prop as keyof ToBeUpdated] = body[
+          prop as keyof ToBeUpdated
+        ] as string;
         if (toBeUpdated[prop as keyof ToBeUpdated]?.length ?? 0 > 30) {
           res.status(400).send({ message: "input value too long" });
         }
